@@ -12,7 +12,15 @@
             const messages = document.getElementById('messages');
             const ws = new WebSocket('ws://localhost:1337');
 
-            ws.onopen = (event) => console.log('Websocket is connected!')
+            ws.onopen = (event) => {
+                console.log('Websocket is connected!');
+                ws.send(JSON.stringify({
+                    type: 'join',
+                    payload: {
+                        name: 'Henrique Vieira'
+                    }
+                }))
+            }
             ws.onmessage = (msg) => console.log('I got a message', msg)
             ws.onerror = (error) => console.error('Web socket error', error)
             ws.onclose = (event) => console.log('Disconnected from the websocket server.');
