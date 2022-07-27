@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Web Socket Client | Henrique Vieira</title>
+    </head>
+    <body>
+        <output id="messages"></output>
+        <script>
+            const messages = document.getElementById('messages');
+            const ws = new WebSocket('ws://localhost:1337');
+
+            ws.onopen = (event) => console.log('Websocket is connected!')
+            ws.onmessage = (msg) => console.log('I got a message', msg)
+            ws.onerror = (error) => console.error('Web socket error', error)
+            ws.onclose = (event) => console.log('Disconnected from the websocket server.');
+        </script>
+    </body>
+</html>
