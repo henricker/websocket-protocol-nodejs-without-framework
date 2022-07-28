@@ -3,11 +3,8 @@ import { CONSTANTS } from './constants';
 import { handleHttp } from './handle/http/handle-http';
 import { onSocketUpgrade } from './handle/websocket/onSocketUpgrade';
 
-
-
 const server = createServer(handleHttp)
 .listen(CONSTANTS.PORT, () => console.log('Server listening to ', CONSTANTS.PORT));
-
 
 /**
  * The Upgrade general-header allows the client to specify what additional 
