@@ -1,5 +1,6 @@
 import internal from "stream";
 import { CONSTANTS } from "../../constants";
+import { sendMessageToClient } from "./send-messaging/sendMessageToClient";
 import { umask } from "./util/umask";
 
 export function onSocketReadable(socket: internal.Duplex) {
@@ -7,7 +8,7 @@ export function onSocketReadable(socket: internal.Duplex) {
         return
     //consume optcode (first byte) => type of message (text, binary, ping, pong)
     // 1 -> 1 byte = 8 bits
-    socket.read(1);
+     socket.read(1);
 
     const [maskAndPayloadLength] = socket.read(1);
     const payloadLength = maskAndPayloadLength - CONSTANTS.FIRST_BIT;
@@ -21,6 +22,10 @@ export function onSocketReadable(socket: internal.Duplex) {
         //Convert 2 bytes to number using readUInt16BE to get integer 16 bits
         messageLength = socket.read(2).readUInt16BE(0);
     }
+    else if(payloadLength === CONSTANTS.SIXTYFOUR_BIT_INTEGER_MARKER) {
+        //Convert 4 bytes to number using readUInt32BE to get integer 32 bits
+        messageLength = socket.read(8).readUInt32BE(0);
+    }
     else {
         throw new Error('Payload length is too big');
     }
@@ -30,7 +35,14 @@ export function onSocketReadable(socket: internal.Duplex) {
 
     // The rest of the message (messageLength bytes) is a payload encoded
     const encodedData = socket.read(messageLength);
-    const decodedData = umask(encodedData, maskKey).toString('utf8');
+    if(encodedData) {
+        const decodedData = umask(encodedData, maskKey).toString('utf8');
+        const logger = {
+            messageReceived: decodedData,
+            date: new Date().toISOString()
+        }
+        console.log(logger);
+        sendMessageToClient(JSON.stringify({name: 'henricker'}), socket);
+    }
 
-    console.log(decodedData);
 }

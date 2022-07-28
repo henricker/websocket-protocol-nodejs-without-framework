@@ -13,16 +13,25 @@
             const ws = new WebSocket('ws://localhost:1337');
 
             const payloadToSend = Array.from({
-                length: 30
-            }).map(() => ({
-                type: 'join',
-                payload: {
-                    name: 'Henrique Vieira'
-                }
-            }))
+                length: 1
+            }).map((_, index) => ({
+                name: `Henricker-${index}`,
+                profession: 'developer',
+                address: {
+                    street: 'Rua dos Bobos',
+                    number: '123'
+                },
+            }));
+
             ws.onopen = (event) => {
                 console.log('Websocket is connected!');
                 ws.send(JSON.stringify(payloadToSend))
+            }
+            ws.onmessage = (msg) => {
+                console.log(msg);
+                const data = JSON.parse(msg.data);
+                console.log('i got message!', data)
+                messages.innerHTML += `<p>${data.name}</p>`;
             }
             ws.onmessage = (msg) => console.log('I got a message', msg)
             ws.onerror = (error) => console.error('Web socket error', error)
