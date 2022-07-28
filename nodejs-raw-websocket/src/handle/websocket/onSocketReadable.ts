@@ -16,7 +16,12 @@ export function onSocketReadable(socket: internal.Duplex) {
 
     if(payloadLength <= CONSTANTS.SEVEN_BITS_INTEGER_MARKER) {
         messageLength = payloadLength;
-    } else {
+    } 
+    else if(payloadLength === CONSTANTS.SIXTEEN_BIT_INTEGER_MARKER) {
+        //Convert 2 bytes to number using readUInt16BE to get integer 16 bits
+        messageLength = socket.read(2).readUInt16BE(0);
+    }
+    else {
         throw new Error('Payload length is too big');
     }
 
@@ -26,5 +31,6 @@ export function onSocketReadable(socket: internal.Duplex) {
     // The rest of the message (messageLength bytes) is a payload encoded
     const encodedData = socket.read(messageLength);
     const decodedData = umask(encodedData, maskKey).toString('utf8');
-    console.log(decodedData)
+
+    console.log(decodedData);
 }
